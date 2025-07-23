@@ -37,8 +37,8 @@ func (app *App) renderList() {
 	maxVisible := h - 3
 
 	// Header
-	printLine(0, 0, "Source IP         Dest IP           Type     Record", termbox.ColorWhite|termbox.AttrBold)
-	printLine(0, 1, "─────────────────────────────────────────────────", termbox.ColorWhite)
+	printLine(0, 0, "Source IP         Dest IP           Type     Record   Size", termbox.ColorWhite|termbox.AttrBold)
+	printLine(0, 1, "────────────────────────────────────────────────────────", termbox.ColorWhite)
 
 	// Adjust offset
 	if app.selected < app.offset {
@@ -51,7 +51,7 @@ func (app *App) renderList() {
 	for i := 0; i < maxVisible && app.offset+i < len(app.packets); i++ {
 		idx := app.offset + i
 		p := app.packets[idx]
-		line := fmt.Sprintf("%-17s %-17s %-8s %s", p.SrcIP, p.DstIP, p.Type, p.RecordType)
+		line := fmt.Sprintf("%-17s %-17s %-8s %s", p.SrcIP, p.DstIP, p.Type, p.RecordType, len(p.RawData))
 
 		fg := termbox.ColorWhite
 		bg := termbox.ColorDefault
