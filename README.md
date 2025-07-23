@@ -1,6 +1,6 @@
 # DNS Packet Analyzer
 
-A Go-based toolkit for DNS-based covert channel emulation packet analysis and crafting. D
+A Go-based toolkit for DNS-based covert channel emulation packet analysis and crafting. 
 Designed for network security researchers, threat hunters, and DNS protocol enthusiasts. 
 This tool provides deep inspection capabilities for DNS packets and allows crafting of custom DNS packets with 
 full control over all fields, including rarely-examined ones like the Z (reserved) bits.
