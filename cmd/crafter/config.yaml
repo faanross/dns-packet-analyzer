@@ -1,0 +1,50 @@
+resolver:
+  # use_system_defaults: If true, the application will automatically find and use
+  # your computer's default DNS resolver, ignoring the ip and port fields below.
+  # If false, it will use the manually specified ip and port.
+  use_system_defaults: false
+
+  # ip: The IP address of the DNS resolver to send this packet to.
+  ip: "1.1.1.1"
+
+  # port: The standard port for DNS queries.
+  port: 53
+
+header:
+  # id: A 16-bit identifier, either set custom value here, or
+  # if set to 0, will be set to a random value in
+  # note max value is 65535
+  id: 0
+
+  # qr: false = query | true = response
+  qr: false
+
+  # opcode: The purpose of the message.
+  # Common values: "QUERY", "IQUERY", "STATUS"
+  opcode: "QUERY"
+
+  # authoritative: Is this an authoritative answer? (Usually false for queries)
+  authoritative: false
+  # truncated: Is the message truncated? (Usually false)
+  truncated: false
+  # recursion_desired: Ask the server to perform recursion? (Usually true)
+  recursion_desired: true
+  # recursion_available: Is recursion available? (Set by server, so false for queries)
+  recursion_available: false
+
+  # z: The 3 reserved bits, "must" be 0, but application allows for any value 0 - 7
+  z: 6
+
+  # rcode: The 4-bit response code. Set any value from 0 to 15.
+  rcode: 0
+
+question:
+  # name: The domain we're requesting to resolve
+  # The trailing dot signifies the root of the DNS tree, making it a Fully Qualified Domain Name (FQDN).
+  name: "www.timeserversync.com."
+
+  # type: The type of DNS record to query for.
+  type: "A"
+
+  # class: The class of the query. For internet addresses, this is always "IN".
+  class: "IN"

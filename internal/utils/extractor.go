@@ -8,6 +8,7 @@ import (
 	"github.com/miekg/dns"
 )
 
+// ExtractDNSPackets is used to extract DNS packets from a pcap for our analyzer
 func ExtractDNSPackets(pcapFile string) ([]models.DNSPacket, error) {
 	handle, err := pcap.OpenOffline(pcapFile)
 	if err != nil {

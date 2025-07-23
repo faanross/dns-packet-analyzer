@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"github.com/faanross/dns-packet-analyzer/internal/selector"
 	"github.com/miekg/dns"
 	"github.com/nsf/termbox-go"
 	"os"
@@ -38,8 +37,8 @@ func (app *App) renderList() {
 	maxVisible := h - 3
 
 	// Header
-	selector.PrintLine(0, 0, "Source IP         Dest IP           Type", termbox.ColorWhite|termbox.AttrBold)
-	selector.PrintLine(0, 1, "─────────────────────────────────────────────────", termbox.ColorWhite)
+	printLine(0, 0, "Source IP         Dest IP           Type", termbox.ColorWhite|termbox.AttrBold)
+	printLine(0, 1, "─────────────────────────────────────────────────", termbox.ColorWhite)
 
 	// Adjust offset
 	if app.selected < app.offset {
@@ -61,11 +60,11 @@ func (app *App) renderList() {
 			bg = termbox.ColorWhite
 		}
 
-		selector.PrintLineWithColor(0, i+2, line, fg, bg)
+		printLineWithColor(0, i+2, line, fg, bg)
 	}
 
 	// Instructions
-	selector.PrintLine(0, h-1, "↑/↓: Navigate  Enter: View Details  q: Quit", termbox.ColorYellow)
+	printLine(0, h-1, "↑/↓: Navigate  Enter: View Details  q: Quit", termbox.ColorYellow)
 }
 
 func (app *App) renderDetail() {
@@ -77,30 +76,30 @@ func (app *App) renderDetail() {
 	msg := app.current.Msg
 
 	// Title
-	selector.PrintLine(0, y, "╔══════════════════╗", termbox.ColorCyan)
+	printLine(0, y, "╔══════════════════╗", termbox.ColorCyan)
 	y++
-	selector.PrintLine(0, y, fmt.Sprintf("║                 DNS PACKET DETAILS                   ║"), termbox.ColorCyan)
+	printLine(0, y, fmt.Sprintf("║                 DNS PACKET DETAILS                   ║"), termbox.ColorCyan)
 	y++
-	selector.PrintLine(0, y, "╚══════════════════╝", termbox.ColorCyan)
+	printLine(0, y, "╚══════════════════╝", termbox.ColorCyan)
 	y += 2
 
 	// Packet Info
-	selector.PrintLine(0, y, "📦PACKET INFORMATION", termbox.ColorWhite|termbox.AttrBold)
+	printLine(0, y, "📦PACKET INFORMATION", termbox.ColorWhite|termbox.AttrBold)
 	y++
-	selector.PrintLine(0, y, fmt.Sprintf("   Source: %s  → Destination: %s", app.current.SrcIP, app.current.DstIP), termbox.ColorWhite)
+	printLine(0, y, fmt.Sprintf("   Source: %s  → Destination: %s", app.current.SrcIP, app.current.DstIP), termbox.ColorWhite)
 	y++
-	selector.PrintLine(0, y, fmt.Sprintf("   Type: %s | Size: %d bytes", app.current.Type, len(app.current.RawData)), termbox.ColorWhite)
+	printLine(0, y, fmt.Sprintf("   Type: %s | Size: %d bytes", app.current.Type, len(app.current.RawData)), termbox.ColorWhite)
 	y += 2
 
 	// Header Section
-	selector.PrintLine(0, y, "🏷️DNS HEADER", termbox.ColorWhite|termbox.AttrBold)
+	printLine(0, y, "🏷️DNS HEADER", termbox.ColorWhite|termbox.AttrBold)
 	y++
 	y = app.renderHeader(msg, y)
 	y++
 
 	// Question Section
 	if len(msg.Question) > 0 {
-		selector.PrintLine(0, y, "❓ QUESTION SECTION", termbox.ColorWhite|termbox.AttrBold)
+		printLine(0, y, "❓ QUESTION SECTION", termbox.ColorWhite|termbox.AttrBold)
 		y++
 		y = app.renderQuestions(msg.Question, y)
 		y++
@@ -108,7 +107,7 @@ func (app *App) renderDetail() {
 
 	// Answer Section
 	if len(msg.Answer) > 0 {
-		selector.PrintLine(0, y, fmt.Sprintf("✅ ANSWER SECTION (%d records)", len(msg.Answer)), termbox.ColorWhite|termbox.AttrBold)
+		printLine(0, y, fmt.Sprintf("✅ ANSWER SECTION (%d records)", len(msg.Answer)), termbox.ColorWhite|termbox.AttrBold)
 		y++
 		y = app.renderResourceRecords(msg.Answer, y)
 		y++
@@ -116,7 +115,7 @@ func (app *App) renderDetail() {
 
 	// Authority Section
 	if len(msg.Ns) > 0 {
-		selector.PrintLine(0, y, fmt.Sprintf("🏛️  AUTHORITY SECTION (%d records)", len(msg.Ns)), termbox.ColorWhite|termbox.AttrBold)
+		printLine(0, y, fmt.Sprintf("🏛️  AUTHORITY SECTION (%d records)", len(msg.Ns)), termbox.ColorWhite|termbox.AttrBold)
 		y++
 		y = app.renderResourceRecords(msg.Ns, y)
 		y++
@@ -124,23 +123,23 @@ func (app *App) renderDetail() {
 
 	// Additional Section
 	if len(msg.Extra) > 0 {
-		selector.PrintLine(0, y, fmt.Sprintf("➕ ADDITIONAL SECTION (%d records)", len(msg.Extra)), termbox.ColorWhite|termbox.AttrBold)
+		printLine(0, y, fmt.Sprintf("➕ ADDITIONAL SECTION (%d records)", len(msg.Extra)), termbox.ColorWhite|termbox.AttrBold)
 		y++
 		y = app.renderResourceRecords(msg.Extra, y)
 	}
 
 	// Instructions at bottom
 	_, h := termbox.Size()
-	selector.PrintLine(0, h-1, "Press 'q' to return to packet list", termbox.ColorYellow)
+	printLine(0, h-1, "Press 'q' to return to packet list", termbox.ColorYellow)
 }
 
 func (app *App) renderHeader(msg *dns.Msg, y int) int {
 	// Create header box
-	selector.PrintLine(2, y, "├──────────────────", termbox.ColorWhite)
+	printLine(2, y, "├──────────────────", termbox.ColorWhite)
 	y++
 
 	// ID
-	selector.PrintLine(2, y, fmt.Sprintf("├ ID: %d ", msg.Id), termbox.ColorWhite)
+	printLine(2, y, fmt.Sprintf("├ ID: %d ", msg.Id), termbox.ColorWhite)
 	y++
 
 	// QR Flag
@@ -148,58 +147,58 @@ func (app *App) renderHeader(msg *dns.Msg, y int) int {
 	if msg.Response {
 		qrStr = "Response"
 	}
-	selector.PrintLine(2, y, fmt.Sprintf("├ QR: %d (%s) ", boolToInt(msg.Response), qrStr), termbox.ColorWhite)
+	printLine(2, y, fmt.Sprintf("├ QR: %d (%s) ", boolToInt(msg.Response), qrStr), termbox.ColorWhite)
 	y++
 
 	// Opcode
-	selector.PrintLine(2, y, fmt.Sprintf("├ Opcode: %d (%s) ", msg.Opcode, dns.OpcodeToString[msg.Opcode]), termbox.ColorWhite)
+	printLine(2, y, fmt.Sprintf("├ Opcode: %d (%s) ", msg.Opcode, dns.OpcodeToString[msg.Opcode]), termbox.ColorWhite)
 	y++
 
 	// AA Flag
-	selector.PrintLine(2, y, fmt.Sprintf("├ AA: %d (Authoritative Answer: %s) ", boolToInt(msg.Authoritative), boolToString(msg.Authoritative)), termbox.ColorWhite)
+	printLine(2, y, fmt.Sprintf("├ AA: %d (Authoritative Answer: %s) ", boolToInt(msg.Authoritative), boolToString(msg.Authoritative)), termbox.ColorWhite)
 	y++
 
 	// TC Flag
-	selector.PrintLine(2, y, fmt.Sprintf("├ TC: %d (Truncated: %s) ", boolToInt(msg.Truncated), boolToString(msg.Truncated)), termbox.ColorWhite)
+	printLine(2, y, fmt.Sprintf("├ TC: %d (Truncated: %s) ", boolToInt(msg.Truncated), boolToString(msg.Truncated)), termbox.ColorWhite)
 	y++
 
 	// RD Flag
-	selector.PrintLine(2, y, fmt.Sprintf("├ RD: %d (Recursion Desired: %s) ", boolToInt(msg.RecursionDesired), boolToString(msg.RecursionDesired)), termbox.ColorWhite)
+	printLine(2, y, fmt.Sprintf("├ RD: %d (Recursion Desired: %s) ", boolToInt(msg.RecursionDesired), boolToString(msg.RecursionDesired)), termbox.ColorWhite)
 	y++
 
 	// RA Flag
-	selector.PrintLine(2, y, fmt.Sprintf("├ RA: %d (Recursion Available: %s) ", boolToInt(msg.RecursionAvailable), boolToString(msg.RecursionAvailable)), termbox.ColorWhite)
+	printLine(2, y, fmt.Sprintf("├ RA: %d (Recursion Available: %s) ", boolToInt(msg.RecursionAvailable), boolToString(msg.RecursionAvailable)), termbox.ColorWhite)
 	y++
 
 	// Z Flag
-	selector.PrintLine(2, y, fmt.Sprintf("├ Z: %d (Reserved - should be 0)", app.current.ZValue), termbox.ColorWhite)
+	printLine(2, y, fmt.Sprintf("├ Z: %d (Reserved - should be 0)", app.current.ZValue), termbox.ColorWhite)
 	y++
 	// Add warning if non-zero
 	if app.current.ZValue != 0 {
-		selector.PrintLine(2, y, "├ ⚠️  WARNING: Non-zero Z value detected!      ", termbox.ColorRed|termbox.AttrBold)
+		printLine(2, y, "├ ⚠️  WARNING: Non-zero Z value detected!      ", termbox.ColorRed|termbox.AttrBold)
 		y++
 	}
 
 	// RCODE
 	rcodeStr := dns.RcodeToString[msg.Rcode]
-	selector.PrintLine(2, y, fmt.Sprintf("├ RCODE: %d (%s) ", msg.Rcode, rcodeStr), termbox.ColorWhite)
+	printLine(2, y, fmt.Sprintf("├ RCODE: %d (%s) ", msg.Rcode, rcodeStr), termbox.ColorWhite)
 	y++
 
 	// Counts line
-	selector.PrintLine(2, y, "├──────────────────", termbox.ColorWhite)
+	printLine(2, y, "├──────────────────", termbox.ColorWhite)
 	y++
 
 	// Section counts
-	selector.PrintLine(2, y, fmt.Sprintf("├ Questions:  %d", len(msg.Question)), termbox.ColorWhite)
+	printLine(2, y, fmt.Sprintf("├ Questions:  %d", len(msg.Question)), termbox.ColorWhite)
 	y++
-	selector.PrintLine(2, y, fmt.Sprintf("├ Answers:    %d", len(msg.Answer)), termbox.ColorWhite)
+	printLine(2, y, fmt.Sprintf("├ Answers:    %d", len(msg.Answer)), termbox.ColorWhite)
 	y++
-	selector.PrintLine(2, y, fmt.Sprintf("├ Authority:  %d", len(msg.Ns)), termbox.ColorWhite)
+	printLine(2, y, fmt.Sprintf("├ Authority:  %d", len(msg.Ns)), termbox.ColorWhite)
 	y++
-	selector.PrintLine(2, y, fmt.Sprintf("├ Additional: %d", len(msg.Extra)), termbox.ColorWhite)
+	printLine(2, y, fmt.Sprintf("├ Additional: %d", len(msg.Extra)), termbox.ColorWhite)
 	y++
 
-	selector.PrintLine(2, y, "└──────────────────", termbox.ColorWhite)
+	printLine(2, y, "└──────────────────", termbox.ColorWhite)
 	y++
 
 	return y
@@ -207,11 +206,11 @@ func (app *App) renderHeader(msg *dns.Msg, y int) int {
 
 func (app *App) renderQuestions(questions []dns.Question, y int) int {
 	for i, q := range questions {
-		selector.PrintLine(2, y, fmt.Sprintf("%d. Name: %s", i+1, q.Name), termbox.ColorWhite)
+		printLine(2, y, fmt.Sprintf("%d. Name: %s", i+1, q.Name), termbox.ColorWhite)
 		y++
-		selector.PrintLine(4, y, fmt.Sprintf("Type: %s (%d)", dns.TypeToString[q.Qtype], q.Qtype), termbox.ColorWhite)
+		printLine(4, y, fmt.Sprintf("Type: %s (%d)", dns.TypeToString[q.Qtype], q.Qtype), termbox.ColorWhite)
 		y++
-		selector.PrintLine(4, y, fmt.Sprintf("Class: %s (%d)", dns.ClassToString[q.Qclass], q.Qclass), termbox.ColorWhite)
+		printLine(4, y, fmt.Sprintf("Class: %s (%d)", dns.ClassToString[q.Qclass], q.Qclass), termbox.ColorWhite)
 		y++
 	}
 	return y
@@ -224,7 +223,7 @@ func (app *App) renderResourceRecords(records []dns.RR, y int) int {
 		if len(rrStr) > 75 {
 			rrStr = rrStr[:72] + "..."
 		}
-		selector.PrintLine(2, y, fmt.Sprintf("%d. %s", i+1, rrStr), termbox.ColorWhite)
+		printLine(2, y, fmt.Sprintf("%d. %s", i+1, rrStr), termbox.ColorWhite)
 		y++
 	}
 	return y
@@ -272,4 +271,16 @@ func boolToString(b bool) string {
 		return "Yes"
 	}
 	return "No"
+}
+
+func printLine(x, y int, text string, attr termbox.Attribute) {
+	for i, ch := range text {
+		termbox.SetCell(x+i, y, ch, attr, termbox.ColorDefault)
+	}
+}
+
+func printLineWithColor(x, y int, text string, fg, bg termbox.Attribute) {
+	for i, ch := range text {
+		termbox.SetCell(x+i, y, ch, fg, bg)
+	}
 }
