@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/faanross/dns-packet-analyzer/internal/models"
 	"github.com/miekg/dns"
 	"github.com/nsf/termbox-go"
 	"os"
@@ -97,6 +98,14 @@ func (app *App) renderDetail() {
 	y++
 	y = app.renderHeader(msg, y)
 	y++
+
+	// RDATA Analysis Section (for responses with analysis data)
+	if app.current.Type == "Response" && app.current.RDATAAnalysis != nil {
+		printLine(0, y, "🔍 RDATA ANALYSIS", termbox.ColorWhite|termbox.AttrBold)
+		y++
+		y = app.renderRDATAAnalysis(app.current.RDATAAnalysis, y)
+		y++
+	}
 
 	// Question Section
 	if len(msg.Question) > 0 {
@@ -284,4 +293,45 @@ func printLineWithColor(x, y int, text string, fg, bg termbox.Attribute) {
 	for i, ch := range text {
 		termbox.SetCell(x+i, y, ch, fg, bg)
 	}
+}
+
+func (app *App) renderRDATAAnalysis(analysis *models.RDATAAnalysis, y int) int {
+	// Create analysis box
+	printLine(2, y, "├──────────────────", termbox.ColorWhite)
+	y++
+
+	// Hex Detection
+	hexColor := termbox.ColorWhite
+	hexStatus := "False"
+	if analysis.HexDetected {
+		hexColor = termbox.ColorRed | termbox.AttrBold
+		hexStatus = "TRUE"
+	}
+	printLine(2, y, "├ HEX DETECTED: ", termbox.ColorWhite)
+	printLine(18, y, hexStatus, hexColor)
+	y++
+
+	// Base64 Detection
+	base64Color := termbox.ColorWhite
+	base64Status := "False"
+	if analysis.Base64Detected {
+		base64Color = termbox.ColorRed | termbox.AttrBold
+		base64Status = "TRUE"
+	}
+	printLine(2, y, "├ Base64 DETECTED: ", termbox.ColorWhite)
+	printLine(21, y, base64Status, base64Color)
+	y++
+
+	// Capacity
+	capacityColor := termbox.ColorWhite
+	if analysis.Capacity >= 98.0 {
+		capacityColor = termbox.ColorRed | termbox.AttrBold
+	}
+	printLine(2, y, fmt.Sprintf("├ Capacity: %.1f%%", analysis.Capacity), capacityColor)
+	y++
+
+	printLine(2, y, "└──────────────────", termbox.ColorWhite)
+	y++
+
+	return y
 }

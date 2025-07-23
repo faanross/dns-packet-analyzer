@@ -4,13 +4,14 @@ import "github.com/miekg/dns"
 
 // DNSPacket is used for analyzer's initial classification of dns packets in pcap
 type DNSPacket struct {
-	SrcIP      string
-	DstIP      string
-	Type       string // "Request" or "Response"
-	RawData    []byte
-	Msg        *dns.Msg // Parsed miekg msg object
-	ZValue     uint8
-	RecordType string // DNS record type (A, MX, CNAME, etc.)
+	SrcIP         string
+	DstIP         string
+	Type          string // "Request" or "Response"
+	RawData       []byte
+	Msg           *dns.Msg // Parsed miekg msg object
+	ZValue        uint8
+	RecordType    string // DNS record type (A, MX, CNAME, etc.)
+	RDATAAnalysis *RDATAAnalysis
 }
 
 // DNSRequest will hold the complete agent-side
@@ -69,4 +70,11 @@ type Resolver struct {
 	// if UseSystemDefaults is false we can manually set the server/resolver here
 	IP   string `yaml:"ip"`
 	Port int    `yaml:"port"`
+}
+
+// RDATAAnalysis is for info related to TXT response RDATA analysis
+type RDATAAnalysis struct {
+	HexDetected    bool
+	Base64Detected bool
+	Capacity       float64
 }

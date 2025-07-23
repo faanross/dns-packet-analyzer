@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"github.com/faanross/dns-packet-analyzer/internal/analyzer"
 	"github.com/faanross/dns-packet-analyzer/internal/models"
 	"github.com/google/gopacket"
 	"github.com/google/gopacket/layers"
@@ -72,14 +73,32 @@ func ExtractDNSPackets(pcapFile string) ([]models.DNSPacket, error) {
 					}
 				}
 
+				// Do RDATA analysis on response TXT sections
+				var rdataAnalysis *models.RDATAAnalysis
+
+				if pktType == "Response" && len(msg.Answer) > 0 {
+					// Analyze first TXT record in answers
+					for _, answer := range msg.Answer {
+						if analysis := analyzer.AnalyzeRDATA(answer); analysis != nil {
+							rdataAnalysis = &models.RDATAAnalysis{
+								HexDetected:    analysis.HexDetected,
+								Base64Detected: analysis.Base64Detected,
+								Capacity:       analysis.Capacity,
+							}
+							break // Analyze only the first TXT record
+						}
+					}
+				}
+
 				dnsPackets = append(dnsPackets, models.DNSPacket{
-					SrcIP:      srcIP,
-					DstIP:      dstIP,
-					Type:       pktType,
-					RecordType: recordType,
-					RawData:    dnsLayerContent,
-					Msg:        msg,
-					ZValue:     zValue,
+					SrcIP:         srcIP,
+					DstIP:         dstIP,
+					Type:          pktType,
+					RecordType:    recordType,
+					RawData:       dnsLayerContent,
+					Msg:           msg,
+					ZValue:        zValue,
+					RDATAAnalysis: rdataAnalysis,
 				})
 			}
 		}
