@@ -136,15 +136,11 @@ func (app *App) renderDetail() {
 
 func (app *App) renderHeader(msg *dns.Msg, y int) int {
 	// Create header box
-	selector.PrintLine(2, y, "┌─────────────────┐", termbox.ColorWhite)
+	selector.PrintLine(2, y, "├──────────────────", termbox.ColorWhite)
 	y++
 
 	// ID
-	selector.PrintLine(2, y, fmt.Sprintf("│ ID: %-45d │", msg.Id), termbox.ColorWhite)
-	y++
-
-	// Flags line
-	selector.PrintLine(2, y, "├─────────────────┤", termbox.ColorWhite)
+	selector.PrintLine(2, y, fmt.Sprintf("├ ID: %d ", msg.Id), termbox.ColorWhite)
 	y++
 
 	// QR Flag
@@ -152,58 +148,58 @@ func (app *App) renderHeader(msg *dns.Msg, y int) int {
 	if msg.Response {
 		qrStr = "Response"
 	}
-	selector.PrintLine(2, y, fmt.Sprintf("│ QR: %d (%s)%-20s│", boolToInt(msg.Response), qrStr, ""), termbox.ColorWhite)
+	selector.PrintLine(2, y, fmt.Sprintf("├ QR: %d (%s) ", boolToInt(msg.Response), qrStr), termbox.ColorWhite)
 	y++
 
 	// Opcode
-	selector.PrintLine(2, y, fmt.Sprintf("│ Opcode: %d (%-48s) │", msg.Opcode, dns.OpcodeToString[msg.Opcode]), termbox.ColorWhite)
+	selector.PrintLine(2, y, fmt.Sprintf("├ Opcode: %d (%s) ", msg.Opcode, dns.OpcodeToString[msg.Opcode]), termbox.ColorWhite)
 	y++
 
 	// AA Flag
-	selector.PrintLine(2, y, fmt.Sprintf("│ AA: %d (Authoritative Answer: %-30s) │", boolToInt(msg.Authoritative), boolToString(msg.Authoritative)), termbox.ColorWhite)
+	selector.PrintLine(2, y, fmt.Sprintf("├ AA: %d (Authoritative Answer: %s) ", boolToInt(msg.Authoritative), boolToString(msg.Authoritative)), termbox.ColorWhite)
 	y++
 
 	// TC Flag
-	selector.PrintLine(2, y, fmt.Sprintf("│ TC: %d (Truncated: %-40s) │", boolToInt(msg.Truncated), boolToString(msg.Truncated)), termbox.ColorWhite)
+	selector.PrintLine(2, y, fmt.Sprintf("├ TC: %d (Truncated: %s) ", boolToInt(msg.Truncated), boolToString(msg.Truncated)), termbox.ColorWhite)
 	y++
 
 	// RD Flag
-	selector.PrintLine(2, y, fmt.Sprintf("│ RD: %d (Recursion Desired: %-32s) │", boolToInt(msg.RecursionDesired), boolToString(msg.RecursionDesired)), termbox.ColorWhite)
+	selector.PrintLine(2, y, fmt.Sprintf("├ RD: %d (Recursion Desired: %s) ", boolToInt(msg.RecursionDesired), boolToString(msg.RecursionDesired)), termbox.ColorWhite)
 	y++
 
 	// RA Flag
-	selector.PrintLine(2, y, fmt.Sprintf("│ RA: %d (Recursion Available: %-30s) │", boolToInt(msg.RecursionAvailable), boolToString(msg.RecursionAvailable)), termbox.ColorWhite)
+	selector.PrintLine(2, y, fmt.Sprintf("├ RA: %d (Recursion Available: %s) ", boolToInt(msg.RecursionAvailable), boolToString(msg.RecursionAvailable)), termbox.ColorWhite)
 	y++
 
 	// Z Flag
-	selector.PrintLine(2, y, fmt.Sprintf("│ Z: %d (Reserved - should be 0)              │", app.current.ZValue), termbox.ColorWhite)
+	selector.PrintLine(2, y, fmt.Sprintf("├ Z: %d (Reserved - should be 0)", app.current.ZValue), termbox.ColorWhite)
 	y++
 	// Add warning if non-zero
 	if app.current.ZValue != 0 {
-		selector.PrintLine(2, y, "│ ⚠️  WARNING: Non-zero Z value detected!      │", termbox.ColorRed|termbox.AttrBold)
+		selector.PrintLine(2, y, "├ ⚠️  WARNING: Non-zero Z value detected!      ", termbox.ColorRed|termbox.AttrBold)
 		y++
 	}
 
 	// RCODE
 	rcodeStr := dns.RcodeToString[msg.Rcode]
-	selector.PrintLine(2, y, fmt.Sprintf("│ RCODE: %d (%-48s) │", msg.Rcode, rcodeStr), termbox.ColorWhite)
+	selector.PrintLine(2, y, fmt.Sprintf("├ RCODE: %d (%s) ", msg.Rcode, rcodeStr), termbox.ColorWhite)
 	y++
 
 	// Counts line
-	selector.PrintLine(2, y, "├─────────────────────────────────────────────────────────────┤", termbox.ColorWhite)
+	selector.PrintLine(2, y, "├──────────────────", termbox.ColorWhite)
 	y++
 
 	// Section counts
-	selector.PrintLine(2, y, fmt.Sprintf("│ Questions:  %-48d │", len(msg.Question)), termbox.ColorWhite)
+	selector.PrintLine(2, y, fmt.Sprintf("├ Questions:  %d", len(msg.Question)), termbox.ColorWhite)
 	y++
-	selector.PrintLine(2, y, fmt.Sprintf("│ Answers:    %-48d │", len(msg.Answer)), termbox.ColorWhite)
+	selector.PrintLine(2, y, fmt.Sprintf("├ Answers:    %d", len(msg.Answer)), termbox.ColorWhite)
 	y++
-	selector.PrintLine(2, y, fmt.Sprintf("│ Authority:  %-48d │", len(msg.Ns)), termbox.ColorWhite)
+	selector.PrintLine(2, y, fmt.Sprintf("├ Authority:  %d", len(msg.Ns)), termbox.ColorWhite)
 	y++
-	selector.PrintLine(2, y, fmt.Sprintf("│ Additional: %-48d │", len(msg.Extra)), termbox.ColorWhite)
+	selector.PrintLine(2, y, fmt.Sprintf("├ Additional: %d", len(msg.Extra)), termbox.ColorWhite)
 	y++
 
-	selector.PrintLine(2, y, "└─────────────────────────────────────────────────────────────┘", termbox.ColorWhite)
+	selector.PrintLine(2, y, "└──────────────────", termbox.ColorWhite)
 	y++
 
 	return y
