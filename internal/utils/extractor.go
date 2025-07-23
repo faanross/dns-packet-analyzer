@@ -53,14 +53,33 @@ func ExtractDNSPackets(pcapFile string) ([]models.DNSPacket, error) {
 
 			// Pre-parse the DNS message
 			msg := new(dns.Msg)
+			var recordType string = "Unknown"
+
 			if err := msg.Unpack(dnsLayerContent); err == nil {
+				// Extract record type based on packet type
+				if pktType == "Request" {
+					// For requests, get the type from the question section
+					if len(msg.Question) > 0 {
+						recordType = dns.TypeToString[msg.Question[0].Qtype]
+					}
+				} else {
+					// For responses, get the type from the first answer record
+					// If no answer records, fall back to question section
+					if len(msg.Answer) > 0 {
+						recordType = dns.TypeToString[msg.Answer[0].Header().Rrtype]
+					} else if len(msg.Question) > 0 {
+						recordType = dns.TypeToString[msg.Question[0].Qtype]
+					}
+				}
+
 				dnsPackets = append(dnsPackets, models.DNSPacket{
-					SrcIP:   srcIP,
-					DstIP:   dstIP,
-					Type:    pktType,
-					RawData: dnsLayerContent,
-					Msg:     msg,
-					ZValue:  zValue,
+					SrcIP:      srcIP,
+					DstIP:      dstIP,
+					Type:       pktType,
+					RecordType: recordType,
+					RawData:    dnsLayerContent,
+					Msg:        msg,
+					ZValue:     zValue,
 				})
 			}
 		}

@@ -37,7 +37,7 @@ func (app *App) renderList() {
 	maxVisible := h - 3
 
 	// Header
-	printLine(0, 0, "Source IP         Dest IP           Type", termbox.ColorWhite|termbox.AttrBold)
+	printLine(0, 0, "Source IP         Dest IP           Type     Record", termbox.ColorWhite|termbox.AttrBold)
 	printLine(0, 1, "─────────────────────────────────────────────────", termbox.ColorWhite)
 
 	// Adjust offset
@@ -51,7 +51,7 @@ func (app *App) renderList() {
 	for i := 0; i < maxVisible && app.offset+i < len(app.packets); i++ {
 		idx := app.offset + i
 		p := app.packets[idx]
-		line := fmt.Sprintf("%-17s %-17s %s", p.SrcIP, p.DstIP, p.Type)
+		line := fmt.Sprintf("%-17s %-17s %-8s %s", p.SrcIP, p.DstIP, p.Type, p.RecordType)
 
 		fg := termbox.ColorWhite
 		bg := termbox.ColorDefault
@@ -88,7 +88,8 @@ func (app *App) renderDetail() {
 	y++
 	printLine(0, y, fmt.Sprintf("   Source: %s  → Destination: %s", app.current.SrcIP, app.current.DstIP), termbox.ColorWhite)
 	y++
-	printLine(0, y, fmt.Sprintf("   Type: %s | Size: %d bytes", app.current.Type, len(app.current.RawData)), termbox.ColorWhite)
+	printLine(0, y, fmt.Sprintf("   Type: %s | Record: %s | Size: %d bytes", app.current.Type, app.current.RecordType, len(app.current.RawData)), termbox.ColorWhite)
+	//printLine(0, y, fmt.Sprintf("   Type: %s | Size: %d bytes", app.current.Type, len(app.current.RawData)), termbox.ColorWhite)
 	y += 2
 
 	// Header Section
