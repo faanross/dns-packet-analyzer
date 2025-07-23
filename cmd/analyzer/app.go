@@ -51,7 +51,7 @@ func (app *App) renderList() {
 	for i := 0; i < maxVisible && app.offset+i < len(app.packets); i++ {
 		idx := app.offset + i
 		p := app.packets[idx]
-		line := fmt.Sprintf("%-17s %-17s %-8s %s", p.SrcIP, p.DstIP, p.Type, p.RecordType, len(p.RawData))
+		line := fmt.Sprintf("%-17s %-17s %-8s %-8s %d", p.SrcIP, p.DstIP, p.Type, p.RecordType, len(p.RawData))
 
 		fg := termbox.ColorWhite
 		bg := termbox.ColorDefault
