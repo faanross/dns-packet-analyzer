@@ -331,7 +331,7 @@ func (app *App) renderRDATAAnalysis(analysis *models.RDATAAnalysis, y int) int {
 
 	// Capacity
 	capacityColor := termbox.ColorWhite
-	if analysis.Capacity >= 98.0 {
+	if analysis.Capacity >= 90.0 {
 		capacityColor = termbox.ColorRed | termbox.AttrBold
 	}
 	printLine(2, y, fmt.Sprintf("├ Capacity: %.1f%%", analysis.Capacity), capacityColor)

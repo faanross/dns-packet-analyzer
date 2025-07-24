@@ -1,7 +1,6 @@
 package analyzer
 
 import (
-	"encoding/hex"
 	"fmt"
 	"github.com/miekg/dns"
 	"regexp"
@@ -44,62 +43,65 @@ func AnalyzeRDATA(rr dns.RR) *RDATAAnalysis {
 	return analysis
 }
 
-// detectHex checks if the string contains hex-encoded data
+// detectHex checks if the string looks like hex-encoded data
 func detectHex(data string) bool {
 	// Remove common separators
 	cleaned := strings.ReplaceAll(data, " ", "")
 	cleaned = strings.ReplaceAll(cleaned, ":", "")
 	cleaned = strings.ReplaceAll(cleaned, "-", "")
 
-	// Check if it's valid hex and has significant length
+	// Check minimum length for suspicious hex
 	if len(cleaned) < 32 { // Minimum 16 bytes of hex data
 		return false
 	}
 
-	_, err := hex.DecodeString(cleaned)
-	return err == nil && isHighEntropyHex(cleaned)
-}
-
-// detectBase64 checks if the string contains base64-encoded data
-func detectBase64(data string) bool {
-	// Base64 regex pattern
-	base64Pattern := regexp.MustCompile(`^[A-Za-z0-9+/]+={0,2}$`)
-
-	// Check minimum length for suspicious base64
-	if len(data) < 32 {
+	// Check if all characters are valid hex characters
+	hexPattern := regexp.MustCompile("^[0-9a-fA-F]+$")
+	if !hexPattern.MatchString(cleaned) {
 		return false
 	}
 
+	// Additional check: hex strings typically have even length
+	if len(cleaned)%2 != 0 {
+		return false
+	}
+
+	// If it passes all checks, it's likely hex
+	return true
+}
+
+// detectBase64 checks if the string looks like base64-encoded data
+func detectBase64(data string) bool {
 	// Remove whitespace
 	cleaned := strings.ReplaceAll(data, " ", "")
 	cleaned = strings.ReplaceAll(cleaned, "\n", "")
 	cleaned = strings.ReplaceAll(cleaned, "\r", "")
 
-	return base64Pattern.MatchString(cleaned) && isHighEntropyBase64(cleaned)
-}
-
-// isHighEntropyHex checks if hex string has high entropy (likely encoded data)
-func isHighEntropyHex(data string) bool {
-	// Simple entropy check - count unique characters
-	charCount := make(map[rune]int)
-	for _, ch := range strings.ToLower(data) {
-		charCount[ch]++
+	// Check minimum length
+	if len(cleaned) < 32 {
+		return false
 	}
 
-	// If we have good distribution across hex chars, it's likely encoded data
-	return len(charCount) >= 10 // At least 10 different hex characters
-}
-
-// isHighEntropyBase64 checks if base64 string has high entropy
-func isHighEntropyBase64(data string) bool {
-	// Count unique characters
-	charCount := make(map[rune]int)
-	for _, ch := range data {
-		charCount[ch]++
+	// Base64 pattern - must be only valid base64 chars
+	base64Pattern := regexp.MustCompile("^[A-Za-z0-9+/]+=*$")
+	if !base64Pattern.MatchString(cleaned) {
+		return false
 	}
 
-	// High entropy base64 should use many different characters
-	return len(charCount) >= 20
+	// Check if padding is correct (if present)
+	if strings.Contains(cleaned, "=") {
+		// Padding should only be at the end
+		if !strings.HasSuffix(cleaned, "=") && !strings.HasSuffix(cleaned, "==") {
+			return false
+		}
+	}
+
+	// Length check - base64 encoded data length is always multiple of 4
+	if len(cleaned)%4 != 0 {
+		return false
+	}
+
+	return true
 }
 
 // calculateCapacity calculates the percentage of TXT record capacity used

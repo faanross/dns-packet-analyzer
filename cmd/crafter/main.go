@@ -15,9 +15,7 @@ import (
 )
 
 // assume go run from root, otherwise change path
-// if you prefer to statically compile to a self-contained binary
-// create a constructor with hardcoded values and bypass yaml
-var pathToYamlFile = "./cmd/crafter/config.yaml"
+var pathToYamlFile = "./cmd/crafter/sus_txt_resp.yaml"
 
 func main() {
 

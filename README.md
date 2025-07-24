@@ -9,8 +9,8 @@ full control over all fields, including rarely-examined ones like the Z (reserve
 
 - **Deep Packet Analysis**: Examine every field of DNS packets, including often-overlooked reserved bits
 - **RDATA Analysis**: Automatically inspects TXT records for signs of covert channels, such as hex or Base64 encoded data, and calculates the record capacity usage.
-- **Custom Packet Crafting**: Create DNS packets with complete control over all header fields via YAML configuration
-- **Anomaly Detection**: Identify unusual DNS packet characteristics that might indicate malicious activity
+- **Custom Packet Crafting**: Create DNS queries and responses with complete control over all fields, including answer sections with suspicious TXT records
+**Anomaly Detection**: Identify unusual DNS packet characteristics that might indicate malicious activity
 - **Interactive TUI**: Terminal-based user interface for easy navigation through captured packets
 - **Visual Packet Inspection**: Hex and ASCII visualization of raw packet data
 - **Cross-Platform**: Works on Windows, macOS, and Linux
@@ -126,6 +126,7 @@ The crafter component allows creation of custom DNS packets with precise control
 - **Z-Bit Manipulation**: Override reserved bits for testing security controls
 - **System Resolver Detection**: Automatically use system DNS settings or specify custom resolvers
 - **Packet Visualization**: See the crafted packet in hex/ASCII format when sending
+- **Response Generation**: Create DNS responses with custom answer sections for testing detection capabilities
 
 #### Configuration File Structure:
 
@@ -188,18 +189,21 @@ sudo tcpdump -i eth0 -w suspicious.pcap 'port 53'
 # - Uncommon record types
 ```
 
-### Example 2: Testing DNS Firewall
+### Example 2: Detect TXT RDATA Abuste
 
-```yaml
-# Create test packet with non-standard Z value
-# Edit config.yaml:
+  ```yaml
+# Create a DNS response with hex-encoded data in TXT record
+# Save as sus_txt_response.yaml
 header:
-  z: 7  # Maximum Z value (3 bits = 0-7)
-  recursion_desired: true
-  
-question:
-  name: "test.malicious.com."
-  type: "TXT"
+  qr: true  # This is a response
+  z: 6      # Non-zero Z value for additional suspicion
+
+answers:
+  - name: "data.malicious.com."
+    type: "TXT"
+    ttl: 300
+    # Hex-encoded data that will trigger detection
+    data: "48656c6c6f20576f726c64212048657820656e636f646564206461746120666f722074657374696e6720444e53207475acbd656c696e672e"
 ```
 
 ```bash

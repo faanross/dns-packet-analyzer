@@ -67,5 +67,24 @@ func BuildDNSRequest(req models.DNSRequest) (*dns.Msg, error) {
 		},
 	}
 
+	// Add answer records if this is a response
+	if req.Header.QR {
+		for _, answer := range req.Answers {
+			switch answer.Type {
+			case "TXT":
+				rr := &dns.TXT{
+					Hdr: dns.RR_Header{
+						Name:   dns.Fqdn(answer.Name),
+						Rrtype: dns.TypeTXT,
+						Class:  dns.ClassINET,
+						Ttl:    answer.TTL,
+					},
+					Txt: []string{answer.Data},
+				}
+				msg.Answer = append(msg.Answer, rr)
+				// Add other record types as needed
+			}
+		}
+	}
 	return msg, nil
 }
