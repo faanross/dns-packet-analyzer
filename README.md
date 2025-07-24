@@ -223,35 +223,6 @@ question:
 # - Encoded data in subdomain labels
 ```
 
-## ⚙️ Configuration
-
-### Supported DNS Record Types
-
-The crafter supports all standard DNS record types including:
-- Common: A, AAAA, CNAME, MX, NS, TXT, SOA, PTR
-- Security: DNSKEY, DS, RRSIG, NSEC, NSEC3, TLSA
-- Service: SRV, NAPTR, CAA, SVCB, HTTPS
-- Special: OPT, ANY, AXFR, IXFR
-
-### Supported OpCodes
-
-- QUERY (standard query)
-- IQUERY (inverse query)
-- STATUS (server status request)
-- NOTIFY (zone change notification)
-- UPDATE (dynamic update)
-
-### RCODE Values
-
-Supports all 16 possible RCODE values (0-15):
-- 0: NOERROR
-- 1: FORMERR
-- 2: SERVFAIL
-- 3: NXDOMAIN
-- 4: NOTIMP
-- 5: REFUSED
-- 6-15: Various extended codes
-
 ## 🏗️ Architecture
 
 ```
