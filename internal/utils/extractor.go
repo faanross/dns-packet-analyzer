@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"fmt"
 	"github.com/faanross/dns-packet-analyzer/internal/analyzer"
 	"github.com/faanross/dns-packet-analyzer/internal/models"
 	"github.com/google/gopacket"
@@ -77,9 +78,17 @@ func ExtractDNSPackets(pcapFile string) ([]models.DNSPacket, error) {
 				var rdataAnalysis *models.RDATAAnalysis
 
 				if pktType == "Response" && len(msg.Answer) > 0 {
+					// Debug: Print what we're analyzing
+					fmt.Printf("DEBUG: Analyzing response with %d answers\n", len(msg.Answer))
+
 					// Analyze first TXT record in answers
-					for _, answer := range msg.Answer {
+					for i, answer := range msg.Answer {
+						fmt.Printf("DEBUG: Answer %d type: %s\n", i, dns.TypeToString[answer.Header().Rrtype])
+
 						if analysis := analyzer.AnalyzeRDATA(answer); analysis != nil {
+							fmt.Printf("DEBUG: Analysis found! Hex: %v, Base64: %v, Capacity: %.2f%%\n",
+								analysis.HexDetected, analysis.Base64Detected, analysis.Capacity)
+
 							rdataAnalysis = &models.RDATAAnalysis{
 								HexDetected:    analysis.HexDetected,
 								Base64Detected: analysis.Base64Detected,
@@ -87,6 +96,10 @@ func ExtractDNSPackets(pcapFile string) ([]models.DNSPacket, error) {
 							}
 							break // Analyze only the first TXT record
 						}
+					}
+
+					if rdataAnalysis == nil {
+						fmt.Printf("DEBUG: No TXT records found for analysis\n")
 					}
 				}
 

@@ -99,6 +99,9 @@ func (app *App) renderDetail() {
 	y = app.renderHeader(msg, y)
 	y++
 
+	fmt.Printf("DEBUG: Type: %s, RecordType: %s, RDATAAnalysis: %v\n",
+		app.current.Type, app.current.RecordType, app.current.RDATAAnalysis)
+
 	// RDATA Analysis Section (for responses with analysis data)
 	if app.current.Type == "Response" && app.current.RDATAAnalysis != nil {
 		printLine(0, y, "🔍 RDATA ANALYSIS", termbox.ColorWhite|termbox.AttrBold)
@@ -302,10 +305,10 @@ func (app *App) renderRDATAAnalysis(analysis *models.RDATAAnalysis, y int) int {
 
 	// Hex Detection
 	hexColor := termbox.ColorWhite
-	hexStatus := "False"
+	hexStatus := ": False"
 	if analysis.HexDetected {
 		hexColor = termbox.ColorRed | termbox.AttrBold
-		hexStatus = "TRUE"
+		hexStatus = ": TRUE"
 	}
 	printLine(2, y, "├ HEX DETECTED: ", termbox.ColorWhite)
 	printLine(18, y, hexStatus, hexColor)
@@ -313,10 +316,10 @@ func (app *App) renderRDATAAnalysis(analysis *models.RDATAAnalysis, y int) int {
 
 	// Base64 Detection
 	base64Color := termbox.ColorWhite
-	base64Status := "False"
+	base64Status := ": False"
 	if analysis.Base64Detected {
 		base64Color = termbox.ColorRed | termbox.AttrBold
-		base64Status = "TRUE"
+		base64Status = ":  TRUE"
 	}
 	printLine(2, y, "├ Base64 DETECTED: ", termbox.ColorWhite)
 	printLine(21, y, base64Status, base64Color)

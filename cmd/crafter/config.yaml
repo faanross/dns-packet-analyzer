@@ -44,7 +44,7 @@ question:
   name: "www.timeserversync.com."
 
   # type: The type of DNS record to query for.
-  type: "TXT"
+  type: "A"
 
   # class: The class of the query. For internet addresses, this is always "IN".
-  class: "IN"
+  class: "NO"

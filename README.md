@@ -8,6 +8,7 @@ full control over all fields, including rarely-examined ones like the Z (reserve
 ## 🎯 Key Features
 
 - **Deep Packet Analysis**: Examine every field of DNS packets, including often-overlooked reserved bits
+- **RDATA Analysis**: Automatically inspects TXT records for signs of covert channels, such as hex or Base64 encoded data, and calculates the record capacity usage.
 - **Custom Packet Crafting**: Create DNS packets with complete control over all header fields via YAML configuration
 - **Anomaly Detection**: Identify unusual DNS packet characteristics that might indicate malicious activity
 - **Interactive TUI**: Terminal-based user interface for easy navigation through captured packets
@@ -98,7 +99,10 @@ The analyzer component provides deep inspection of DNS packets from PCAP files w
     - Question section details
     - Answer/Authority/Additional sections
     - Raw hex dump visualization
-- **Anomaly Highlighting**: Automatic detection and warning for non-standard field values
+- **Anomaly Highlighting**: Automatic detection and warning for non-standard field values 
+- **RDATA Analysis**: When analyzing response packets, the tool will now automatically inspect the RDATA of TXT records for common data exfiltration techniques. This includes:
+  - **Hex & Base64 Detection**: Identifies strings that are likely hex or Base64 encoded. 
+  - **Capacity Analysis**: Calculates the percentage of the TXT record's capacity that is being used, which can be an indicator of data chunking.
 
 #### Usage:
 
@@ -293,6 +297,8 @@ dns-packet-analyzer/
 │   ├── crafter/         # Packet crafting logic
 │   │   ├── craft_request.go    # DNS message builder
 │   │   └── manual_override.go  # Z-bit manipulation
+│   ├── analyzer/        # Packet analysis logic
+│   │   └── rdata_analyzer.go # RDATA analysis
 │   └── visualizer/      # Packet visualization
 │       └── visualizer.go # Hex/ASCII display
 └── go.mod              # Go module definition

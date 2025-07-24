@@ -2,6 +2,7 @@ package analyzer
 
 import (
 	"encoding/hex"
+	"fmt"
 	"github.com/miekg/dns"
 	"regexp"
 	"strings"
@@ -16,9 +17,13 @@ type RDATAAnalysis struct {
 
 // AnalyzeRDATA analyzes the RDATA content of DNS records
 func AnalyzeRDATA(rr dns.RR) *RDATAAnalysis {
+	// Debug print
+	fmt.Printf("DEBUG AnalyzeRDATA: Record type: %T\n", rr)
+
 	// Only analyze TXT records
 	txtRecord, ok := rr.(*dns.TXT)
 	if !ok {
+		fmt.Printf("DEBUG: Not a TXT record, skipping\n")
 		return nil
 	}
 
@@ -27,6 +32,8 @@ func AnalyzeRDATA(rr dns.RR) *RDATAAnalysis {
 	for _, txt := range txtRecord.Txt {
 		combinedData += txt
 	}
+
+	fmt.Printf("DEBUG: TXT data: %s (length: %d)\n", combinedData, len(combinedData))
 
 	analysis := &RDATAAnalysis{
 		HexDetected:    detectHex(combinedData),
