@@ -225,6 +225,10 @@ func (app *App) renderQuestions(questions []dns.Question, y int) int {
 		y++
 		printLine(4, y, fmt.Sprintf("Class: %s (%d)", dns.ClassToString[q.Qclass], q.Qclass), termbox.ColorWhite)
 		y++
+		if q.Qclass != dns.ClassINET {
+			printLine(4, y, "⚠️  WARNING: Non-IN class detected!", termbox.ColorRed|termbox.AttrBold)
+			y++
+		}
 	}
 	return y
 }

@@ -99,7 +99,7 @@ The analyzer component provides deep inspection of DNS packets from PCAP files w
     - Question section details
     - Answer/Authority/Additional sections
     - Raw hex dump visualization
-- **Anomaly Highlighting**: Automatic detection and warning for non-standard field values 
+- **Anomaly Highlighting**: Automatic detection and warning for non-standard field values (non-zero Z bits, non-IN class queries)
 - **RDATA Analysis**: When analyzing response packets, the tool will now automatically inspect the RDATA of TXT records for common data exfiltration techniques. This includes:
   - **Hex & Base64 Detection**: Identifies strings that are likely hex or Base64 encoded. 
   - **Capacity Analysis**: Calculates the percentage of the TXT record's capacity that is being used, which can be an indicator of data chunking.
@@ -116,30 +116,6 @@ The analyzer component provides deep inspection of DNS packets from PCAP files w
 - `q`: Quit or return to list view
 - `ESC`: Exit application
 
-#### Example Output:
-```
-╔══════════════════════════╗
-║    DNS PACKET DETAILS    ║
-╚══════════════════════════╝
-
-📦 PACKET INFORMATION
-   Source: 192.168.1.100 → Destination: 8.8.8.8
-   Type: Query | Size: 43 bytes
-
-🏷️ DNS HEADER
-├──────────────────────────────────────────
-├ ID: 54321
-├ QR: 0 (Query)
-├ Opcode: 0 (QUERY)
-├ AA: 0 (Authoritative Answer: No)
-├ TC: 0 (Truncated: No)
-├ RD: 1 (Recursion Desired: Yes)
-├ RA: 0 (Recursion Available: No)
-├ Z: 6 (Reserved - should be 0)
-├ ⚠️  WARNING: Non-zero Z value detected!
-├ RCODE: 0 (NOERROR)
-└──────────────────────────────────────────
-```
 
 ### Crafter
 
@@ -241,6 +217,7 @@ question:
 
 # Check for:
 # - Non-zero Z values (DNS Sandwich indicator)
+# - Non-IN class queries (potential covert channel indicator)
 # - Unusual RCODE values in queries
 # - Patterns in DNS IDs
 # - Encoded data in subdomain labels
